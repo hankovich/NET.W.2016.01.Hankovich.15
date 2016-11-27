@@ -174,6 +174,11 @@ namespace Task2.Logic
 
         #endregion
 
+        /// <summary>
+        /// Add element to the tree
+        /// </summary>
+        /// <param name="item">Element to add</param>
+        /// <exception cref="ArgumentNullException">Throws when item is null</exception>
         public void Add(T item)
         {
             if (item == null)
@@ -222,17 +227,30 @@ namespace Task2.Logic
             }
         }
 
+        /// <summary>
+        /// Clear collection
+        /// </summary>
         public void Clear()
         {
             root = null;
             Count = 0;
         }
 
+        /// <summary>
+        /// Does tree contain such element?
+        /// </summary>
+        /// <param name="item">Element to check presense of</param>
+        /// <returns>True if tree contains such element. Otherwise, false.</returns>
         public bool Contains(T item)
         {
             return FindNode(item) != null;
         }
 
+        /// <summary>
+        /// Find node with such value
+        /// </summary>
+        /// <param name="item">Value of node, which must be found</param>
+        /// <returns>Node, if tree contains such element and null if not.</returns>
         private Node<T> FindNode(T item)
         {
             Node<T> startNode = root;
@@ -257,6 +275,14 @@ namespace Task2.Logic
             return null;
         }
 
+        /// <summary>
+        /// Copy all elements from tree to array since start index
+        /// </summary>
+        /// <param name="array">Array to copy tree in</param>
+        /// <param name="arrayIndex">Index to start copying from</param>
+        /// <exception cref="ArgumentNullException">Throws when destination array is null</exception>
+        /// <exception cref="ArgumentOutOfRangeException">Throws when index to start copying is negative or is greater than array length</exception>
+        /// <exception cref="ArgumentException">Throws when destination array is too small to store all elements from the tree</exception>
         public void CopyTo(T[] array, int arrayIndex)
         {
             if (array == null)
@@ -272,6 +298,11 @@ namespace Task2.Logic
             }
         }
 
+        /// <summary>
+        /// Remove element with such value
+        /// </summary>
+        /// <param name="item">Value of node which must be removed</param>
+        /// <returns>True if element was correctly deleted. False, otherwise(no such element in the tree, for example)</returns>
         public bool Remove(T item)
         {
             Node<T> node = FindNode(item);
@@ -355,8 +386,14 @@ namespace Task2.Logic
             return true;
         }
 
+        /// <summary>
+        /// Count of elements in tree
+        /// </summary>
         public int Count { get; private set; }
 
+        /// <summary>
+        /// Is this collection read-only?
+        /// </summary>
         public bool IsReadOnly => false;
 
         #region Enumenators
@@ -371,17 +408,29 @@ namespace Task2.Logic
             return PreOrder();
         }
 
+        /// <summary>
+        /// Get Enumenator for in-order traversal
+        /// </summary>
+        /// <returns>Enumenator</returns>
         public IEnumerator<T> InOrder()
         {
             return root?.InOrder();
 
         }
 
+        /// <summary>
+        /// Get Enumenator for post-order traversal
+        /// </summary>
+        /// <returns>Enumenator</returns>
         public IEnumerator<T> PostOrder()
         {
             return root?.PostOrder();
         }
 
+        /// <summary>
+        /// Get Enumenator for preorder traversal
+        /// </summary>
+        /// <returns>Enumenator</returns>
         public IEnumerator<T> PreOrder()
         {
             return root?.PreOrder();
