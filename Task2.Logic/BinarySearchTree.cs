@@ -55,7 +55,7 @@ namespace Task2.Logic
                     }
                 }
             }
-            
+
             if (Right != null)
             {
                 using (IEnumerator<T> right = Right.PreOrder())
@@ -123,11 +123,13 @@ namespace Task2.Logic
         }
     }
 
-    public class BinarySearchTree<T>: ICollection<T>
+    public class BinarySearchTree<T> : ICollection<T>
     {
         private Node<T> root;
         private readonly Comparison<T> comparison;
+
         #region Ctors
+
         public BinarySearchTree(Comparison<T> cmp)
         {
             if (cmp == null)
@@ -187,7 +189,9 @@ namespace Task2.Logic
         {
             comparison = Comparer<T>.Default.Compare;
         }
+
         #endregion
+
         public void Add(T item)
         {
             if (item == null)
@@ -221,7 +225,7 @@ namespace Task2.Logic
                 {
                     if (newNode.Right == null)
                     {
-                        newNode.Right = new Node<T>(item) { Father = newNode };
+                        newNode.Right = new Node<T>(item) {Father = newNode};
                         Count++;
                         break;
                     }
@@ -245,37 +249,38 @@ namespace Task2.Logic
 
         public bool Contains(T item)
         {
-            return Contains(root, item);
+            return FindNode(item) != null;
         }
 
-        public bool Contains(Node<T> startNode, T item)
+        private Node<T> FindNode(T item)
         {
+            Node<T> startNode = root;
             while (true)
             {
                 if (startNode == null)
-                    return false;
+                    return null;
                 if (comparison(startNode.Value, item) == 0)
-                    return true;
-                if (comparison(startNode.Value, item) >= 1)
+                    return startNode;
+                if (comparison(item, startNode.Value) >= 1)
                 {
                     startNode = startNode.Right;
                     continue;
                 }
-                if (comparison(startNode.Value, item) <= -1)
+                if (comparison(item, startNode.Value) <= -1)
                 {
                     startNode = startNode.Left;
                     continue;
                 }
                 break;
             }
-            return true;
+            return null;
         }
 
         public void CopyTo(T[] array, int arrayIndex)
         {
             if (array == null)
                 throw new ArgumentNullException($"{nameof(array)} must be not null.");
-            if(arrayIndex < 0 || arrayIndex >= array.Length)
+            if (arrayIndex < 0 || arrayIndex >= array.Length)
                 throw new ArgumentOutOfRangeException($"{nameof(arrayIndex)} is out of range");
             if (array.Length - arrayIndex < Count)
                 throw new ArgumentException($"{nameof(array)} is too small");
@@ -284,13 +289,93 @@ namespace Task2.Logic
 
         public bool Remove(T item)
         {
-            throw new NotImplementedException();
+            Node<T> node = FindNode(item);
+            if (node == null)
+                return false;
+
+            if (node.Left == null && node.Right == null) //No children
+            {
+                if (node.Father != null)
+                    if (ReferenceEquals(node.Father.Left, node))
+                        node.Father.Left = null;
+                    else
+                        node.Father.Right = null;
+                else
+                    root = null;
+
+                Count--;
+                return true;
+            }
+
+            if (node.Left == null ^ node.Right == null) //One child
+            {
+                if (node.Left == null)
+                {
+                    if (node.Right != null)
+                        node.Right.Father = node.Father;
+                    if (node.Father != null)
+                    {
+                        if (ReferenceEquals(node.Father.Left, node))
+                            node.Father.Left = node.Right;
+                        else
+                            node.Father.Right = node.Right;
+                    }
+                    else
+                        root = node.Right;
+                }
+                else
+                {
+                    if (node.Left != null)
+                        node.Left.Father = node.Father;
+                    if (node.Father != null)
+                    {
+
+                        if (ReferenceEquals(node.Father.Left, node))
+                            node.Father.Left = node.Left;
+                        else
+                            node.Father.Right = node.Left;
+                    }
+                    else
+                        root = node.Left;
+                }
+
+                Count--;
+                return true;
+            }
+
+            if (node.Left != null && node.Right != null)
+            {
+                Node<T> nodeToReplace = node.Left;
+                while (nodeToReplace.Right != null)
+                    nodeToReplace = nodeToReplace.Right;
+                Remove(nodeToReplace.Value);
+                if (node.Left != null)
+                    node.Left.Father = nodeToReplace;
+                if (node.Right != null)
+                    node.Right.Father = nodeToReplace;
+                nodeToReplace.Father = node.Father;
+                nodeToReplace.Right = node.Right;
+                nodeToReplace.Left = node.Left;
+                if (ReferenceEquals(node, root))
+                    root = nodeToReplace;
+                else
+                {
+                    if (ReferenceEquals(node.Father.Left, node))
+                        node.Father.Left = nodeToReplace;
+                    else
+                        node.Father.Right = nodeToReplace;
+                }
+                return true;
+            }
+            return true;
         }
 
         public int Count { get; private set; }
 
         public bool IsReadOnly => false;
+
         #region Enumenators
+
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
@@ -303,18 +388,20 @@ namespace Task2.Logic
 
         public IEnumerator<T> InOrder()
         {
-            return root.InOrder();
+            return root?.InOrder();
+
         }
 
         public IEnumerator<T> PostOrder()
         {
-            return root.PostOrder();
+            return root?.PostOrder();
         }
 
         public IEnumerator<T> PreOrder()
         {
-            return root.PreOrder();
+            return root?.PreOrder();
         }
+
         #endregion
     }
 }
