@@ -47,24 +47,18 @@ namespace Task2.Logic
 
             if (Left != null)
             {
-                using (IEnumerator<T> left = Left.PreOrder())
-                {
-                    while (left.MoveNext())
-                    {
-                        yield return left.Current;
-                    }
-                }
+                IEnumerator<T> left = Left.PreOrder();
+
+                while (left.MoveNext())
+                    yield return left.Current;
             }
 
             if (Right != null)
             {
-                using (IEnumerator<T> right = Right.PreOrder())
-                {
-                    while (right.MoveNext())
-                    {
-                        yield return right.Current;
-                    }
-                }
+                IEnumerator<T> right = Right.PreOrder();
+
+                while (right.MoveNext())
+                    yield return right.Current;
             }
         }
 
@@ -72,26 +66,20 @@ namespace Task2.Logic
         {
             if (Left != null)
             {
-                using (IEnumerator<T> left = Left.InOrder())
-                {
-                    while (left.MoveNext())
-                    {
-                        yield return left.Current;
-                    }
-                }
+                IEnumerator<T> left = Left.InOrder();
+
+                while (left.MoveNext())
+                    yield return left.Current;
             }
 
             yield return Value;
 
             if (Right != null)
             {
-                using (IEnumerator<T> right = Right.InOrder())
-                {
-                    while (right.MoveNext())
-                    {
-                        yield return right.Current;
-                    }
-                }
+                IEnumerator<T> right = Right.InOrder();
+
+                while (right.MoveNext())
+                    yield return right.Current;
             }
         }
 
@@ -99,24 +87,18 @@ namespace Task2.Logic
         {
             if (Left != null)
             {
-                using (IEnumerator<T> left = Left.PostOrder())
-                {
-                    while (left.MoveNext())
-                    {
-                        yield return left.Current;
-                    }
-                }
+                IEnumerator<T> left = Left.PostOrder();
+
+                while (left.MoveNext())
+                    yield return left.Current;
             }
 
             if (Right != null)
             {
-                using (IEnumerator<T> right = Right.PostOrder())
-                {
-                    while (right.MoveNext())
-                    {
-                        yield return right.Current;
-                    }
-                }
+                IEnumerator<T> right = Right.PostOrder();
+
+                while (right.MoveNext())
+                    yield return right.Current;
             }
 
             yield return Value;
@@ -242,9 +224,8 @@ namespace Task2.Logic
 
         public void Clear()
         {
-            using (IEnumerator<T> it = PostOrder())
-                while (it.MoveNext())
-                    Remove(it.Current);
+            root = null;
+            Count = 0;
         }
 
         public bool Contains(T item)
@@ -284,7 +265,11 @@ namespace Task2.Logic
                 throw new ArgumentOutOfRangeException($"{nameof(arrayIndex)} is out of range");
             if (array.Length - arrayIndex < Count)
                 throw new ArgumentException($"{nameof(array)} is too small");
-            Array.Copy(this.ToArray(), 0, array, arrayIndex, Count);
+            
+            foreach (var item in this)
+            {
+                array[arrayIndex++] = item;
+            }
         }
 
         public bool Remove(T item)
